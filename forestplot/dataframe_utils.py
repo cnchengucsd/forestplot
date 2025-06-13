@@ -54,8 +54,13 @@ def sort_groups(
     -------
             pd.core.frame.DataFrame	ordered by order in 'group_order'.
     """
+    # Preserve original index to maintain within-group order
+    dataframe = dataframe.reset_index(drop=False)
     dataframe[groupvar] = pd.Categorical(dataframe[groupvar], group_order)
-    dataframe.sort_values(groupvar, inplace=True)
+    # Sort by group first, then by original index to preserve within-group order
+    dataframe = dataframe.sort_values([groupvar, 'index'], kind='stable')
+    # Remove the temporary index column
+    dataframe = dataframe.drop('index', axis=1).reset_index(drop=True)
     return dataframe
 
 

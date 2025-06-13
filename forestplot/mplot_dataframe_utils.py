@@ -36,15 +36,19 @@ def insert_group_model(
     groups = dataframe[groupvar].unique()
 
     df_groupmodel_asvar = pd.DataFrame()
-    for model in models:
-        for group in groups:
-            _df = dataframe.query(f"{model_col}==@model and {groupvar}==@group")
-            addgroupvar = pd.DataFrame(
-                {varlabel: [group], groupvar: [group], model_col: [model]}
-            )
-            df_groupmodel_asvar = pd.concat(
-                [df_groupmodel_asvar, addgroupvar, _df], ignore_index=True
-            )
+    # Iterate through groups first to preserve group-based structure
+    for group in groups:
+        for model in models:
+            # Use boolean indexing to preserve original order instead of query
+            mask = (dataframe[model_col] == model) & (dataframe[groupvar] == group)
+            _df = dataframe[mask].copy()
+            if len(_df) > 0:  # Only add if there are rows for this model-group combination
+                addgroupvar = pd.DataFrame(
+                    {varlabel: [group], groupvar: [group], model_col: [model]}
+                )
+                df_groupmodel_asvar = pd.concat(
+                    [df_groupmodel_asvar, addgroupvar, _df], ignore_index=True
+                )
     return df_groupmodel_asvar
 
 
