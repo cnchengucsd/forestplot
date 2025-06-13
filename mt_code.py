@@ -19,9 +19,9 @@ def create_forest_plot(data):
     data = data[data['predictor'].isin(selected_predictors)]
 
     # Calculate appropriate figure size based on number of rows
-    # Account for forestplot package's automatic y-axis compression
-    height = max(20, len(data) * 0.4)  # Increased from 0.3 to 0.4 inches per row, minimum 20 inches
-    figsize = (14, height)  # Make it wider too for better readability
+    # Use moderate height with manual label positioning fix
+    height = max(16, len(data) * 0.3)  # Back to 0.3 inches per row
+    figsize = (12, height)
     
     # Preserve the order of predictors as specified in our selection
     predictor_order = [p for p in selected_predictors if p in data['predictor'].unique()]
@@ -60,8 +60,10 @@ def create_forest_plot(data):
             title="Odds Ratio Comparison to Patients at Time A with the Baseline Characteristic",
             figsize=figsize, 
             **{
-                "markersize": 30,
+                "markersize": 35,  # Moderate marker size
                 "offset": 0.35,  
+                "fontsize": 12,  # Standard font size
+                "grouplab_size": 14,  # Moderate group label size
                 # Vertical reference line parameters:
                 "xline": 1,                    # Position of vertical reference line
                 "xlinestyle": (0, (10, 5)),    # Line style (long dash)
@@ -71,13 +73,19 @@ def create_forest_plot(data):
             }
         )
 
-    # Customize appearance and fix layout
-    plt.subplots_adjust(left=0.4, right=0.85, top=0.95, bottom=0.05)  # Adjust margins
+    # Manual fix for label positioning - force labels to be visible
+    ax.tick_params(axis='y', which='major', pad=20)  # Increase padding between labels and axis
+    
+    # Ensure y-axis labels are positioned correctly
+    for label in ax.get_yticklabels():
+        label.set_horizontalalignment('right')
+        label.set_x(-0.02)  # Position labels closer to the plot area
+
     return ax
 
 df_sorted = pd.read_csv('forest_plot_20250612.csv')
 ax = create_forest_plot(df_sorted)
 plt.show()
-plt.savefig('mt_results/summary_forest_plot.png', dpi=300, bbox_inches='tight')
+plt.savefig('mt_results/summary_forest_plot.png', dpi=400, bbox_inches='tight')  # Higher DPI for quality
 
 
