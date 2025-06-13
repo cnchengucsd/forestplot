@@ -20,8 +20,8 @@ def create_forest_plot(data):
 
     # Calculate appropriate figure size based on number of rows
     # Use moderate height with manual label positioning fix
-    height = max(16, len(data) * 0.3)  # Back to 0.3 inches per row
-    figsize = (12, height)
+    height = max(20, len(data) * 0.4)  # Increased from 0.3 to 0.4 inches per row for taller plot
+    figsize = (10, height)  # Reduced width from 12 to 10 inches
     
     # Preserve the order of predictors as specified in our selection
     predictor_order = [p for p in selected_predictors if p in data['predictor'].unique()]
