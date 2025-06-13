@@ -7,10 +7,7 @@ def create_forest_plot(data):
     """
     Create forest plot for given data with proper label positioning and sorting.
     
-    Key fixes implemented:
-    1. Custom sorting: baseline first, then 'vs ...' labels alphabetically within each group
-    2. Manual label positioning to fix forestplot package's positioning issues with large figures
-    3. Optimized figure dimensions: taller and narrower for better readability
+    This version works with the modified forestplot package that has custom sorting.
     """
     if len(data) == 0:
         print(f"No data available for forest plot")
@@ -22,7 +19,7 @@ def create_forest_plot(data):
         'anxiety', 'depression', 'radiculopathy', 'sciatica', 
         'discpathology', 'spinalstenosis', 'raceethnicity'
     ]
-    data = data[data['predictor'].isin(selected_predictors)]
+    data = data[data['predictor'].isin(selected_predictors)].copy()
 
     # Calculate figure size: taller and narrower for better readability
     height = max(20, len(data) * 0.4)  # 0.4 inches per row for adequate spacing
@@ -31,21 +28,7 @@ def create_forest_plot(data):
     # Preserve the order of predictors as specified
     predictor_order = [p for p in selected_predictors if p in data['predictor'].unique()]
     
-    # Custom sorting function: baseline first, then 'vs ...' labels alphabetically
-    def label_sort_key(label):
-        label_stripped = str(label).strip().lower()
-        if label_stripped == 'baseline':
-            return (0, '')  # Baseline always first
-        elif label_stripped.startswith('vs '):
-            return (1, label_stripped)  # 'vs ...' labels sorted alphabetically
-        else:
-            return (2, label_stripped)  # Fallback for unexpected labels
-
-    # Apply sorting: by predictor, then time_period, then custom label order
-    data['label_order'] = data['label'].map(label_sort_key)
-    data = data.sort_values(['predictor', 'time_period', 'label_order'])
-    
-    # Create forest plot
+    # Create forest plot - the modified package handles custom sorting
     ax = fp.mforestplot(
             dataframe=data,
             estimate="metric",
@@ -58,7 +41,7 @@ def create_forest_plot(data):
             groupvar="predictor",
             group_order=predictor_order,
             color_alt_rows=True,
-            sort=False,  # Don't sort - we pre-sorted the data
+            sort=True,  # Modified package handles custom sorting
             pval="p_value",
             xlabel="Odds Ratio (95% CI)",
             ylabel="Predictors",
@@ -79,7 +62,7 @@ def create_forest_plot(data):
         )
 
     # CRITICAL FIX: Manual label positioning to ensure visibility
-    # The forestplot package has issues with label positioning on large figures
+    # This fixes the forestplot package's positioning issues with large figures
     ax.tick_params(axis='y', which='major', pad=20)
     for label in ax.get_yticklabels():
         label.set_horizontalalignment('right')
