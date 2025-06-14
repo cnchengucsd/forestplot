@@ -21,9 +21,9 @@ def create_forest_plot(data):
     ]
     data = data[data['predictor'].isin(selected_predictors)].copy()
 
-    # Calculate figure size: taller and narrower for better readability
-    height = max(20, len(data) * 0.4)  # 0.4 inches per row for adequate spacing
-    figsize = (10, height)  # 10 inches wide for compact display
+    # Calculate figure size: optimized for display window fitting
+    height = max(8, len(data) * 0.18)  # Further reduced to 0.18 inches per row
+    figsize = (14, height)  # Wider to compensate for shorter height
     
     # Preserve the order of predictors as specified
     predictor_order = [p for p in selected_predictors if p in data['predictor'].unique()]
@@ -45,13 +45,13 @@ def create_forest_plot(data):
             pval="p_value",
             xlabel="Odds Ratio (95% CI)",
             ylabel="Predictors",
-            title="Odds Ratio Comparison to Patients at Time A with the Baseline Characteristic",
+            title="",  # Remove title to eliminate top whitespace
             figsize=figsize, 
             **{
-                "markersize": 35,
-                "offset": 0.35,  
-                "fontsize": 12,
-                "grouplab_size": 14,
+                "markersize": 20,  # Further reduced for compact layout
+                "offset": 0.2,    # Tighter spacing between markers
+                "fontsize": 9,    # Smaller font for compact display
+                "grouplab_size": 10,  # Smaller group labels
                 # Vertical reference line at OR = 1
                 "xline": 1,
                 "xlinestyle": (0, (10, 5)),
@@ -63,14 +63,14 @@ def create_forest_plot(data):
 
     # CRITICAL FIX: Manual label positioning to ensure visibility
     # This fixes the forestplot package's positioning issues with large figures
-    ax.tick_params(axis='y', which='major', pad=20)
+    ax.tick_params(axis='y', which='major', pad=15)  # Reduced padding from 20 to 15
     for label in ax.get_yticklabels():
         label.set_horizontalalignment('right')
         # Position labels within the plot area instead of outside
         label.set_x(0.05)  # Positive value to keep labels inside figure bounds
 
     # Enable subplot configuration tool and set proper margins
-    plt.subplots_adjust(left=0.64, right=0.9, top=1, bottom=0.173)
+    plt.subplots_adjust(left=0.45, right=0.95, top=0.98, bottom=0.12)  # Minimal top margin, more compact
 
     return ax
 
@@ -86,8 +86,15 @@ if __name__ == "__main__":
     # Force the figure to draw and apply all adjustments
     fig.canvas.draw()
     
-    # Apply subplot adjustments again to ensure they're captured in save
-    plt.subplots_adjust(left=0.64, right=0.9, top=1, bottom=0.173)
+    # Apply subplot adjustments again with optimized margins for saving
+    plt.subplots_adjust(left=0.45, right=0.95, top=0.98, bottom=0.12)
+    
+    # Adjust legend position for compact layout
+    legend = ax.get_legend()
+    if legend:
+        # Move legend closer to the plot for compact layout
+        legend.set_bbox_to_anchor((0.5, -0.04))  # Adjusted for compact figure
+        legend.set_loc('upper center')
     
     # Save with the correct proportions
     print("Saving forest plot...")
