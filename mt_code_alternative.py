@@ -75,28 +75,33 @@ def create_forest_plot(data):
     return ax
 
 
+# Alternative saving approach - copy this into mt_code.py if the main version doesn't work
+
 # Main execution
 if __name__ == "__main__":
     df_sorted = pd.read_csv('forest_plot_20250612.csv')
     ax = create_forest_plot(df_sorted)
     
-    # Get the figure and ensure all adjustments are applied
+    # Get the figure and force it to draw
     fig = plt.gcf()
+    fig.canvas.draw()  # Force drawing
     
-    # Force the figure to draw and apply all adjustments
-    fig.canvas.draw()
-    
-    # Apply subplot adjustments again to ensure they're captured in save
-    plt.subplots_adjust(left=0.64, right=0.9, top=1, bottom=0.173)
-    
-    # Save with the correct proportions
+    # Save with multiple approaches
     print("Saving forest plot...")
-    fig.savefig('mt_results/summary_forest_plot.png', dpi=400, 
-                facecolor='white', edgecolor='none',
-                bbox_inches=None)  # Don't use bbox_inches to preserve our subplot adjustments
-    print("Forest plot saved to mt_results/summary_forest_plot.png")
     
-    # Show the plot after saving
-    plt.show()
-
-
+    # Method 1: Direct save
+    fig.savefig('mt_results/summary_forest_plot_v1.png', dpi=400, 
+                facecolor='white', edgecolor='none')
+    
+    # Method 2: With bbox_inches
+    fig.savefig('mt_results/summary_forest_plot_v2.png', dpi=400, 
+                bbox_inches='tight', facecolor='white')
+    
+    # Method 3: Using plt.savefig
+    plt.savefig('mt_results/summary_forest_plot_v3.png', dpi=400, 
+                facecolor='white', edgecolor='none')
+    
+    print("Multiple versions saved - check which one works!")
+    
+    # Show the plot
+    plt.show() 
