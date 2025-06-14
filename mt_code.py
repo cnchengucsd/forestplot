@@ -69,7 +69,7 @@ def create_forest_plot(data):
         label.set_x(-0.02)  # Position labels close to plot area
 
     # Enable subplot configuration tool
-    plt.subplots_adjust(left=0.4, right=0.9, top=0.95, bottom=0.05)
+    plt.subplots_adjust(left=0.656, right=0.9, top=1, bottom=0.16)
 
     return ax
 
